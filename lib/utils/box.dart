@@ -2,45 +2,61 @@ import 'package:garden_guard/utils/box_value.dart';
 import 'package:get_storage/get_storage.dart';
 
 class BoxStorage {
-  final box = GetStorage();
+  static final box = GetStorage();
 
-  bool get haveMqtt => box.read(BoxValue.haveMqtt) ?? false;
+  static bool get haveMqtt => box.read(BoxValue.haveMqtt) ?? false;
 
-  String get boxUrl => box.read(BoxValue.boxUrl) ?? '';
+  static String get boxUrl => box.read(BoxValue.boxUrl) ?? '';
 
-  String get boxPort => box.read(BoxValue.boxPort) ?? '';
+  static String get boxPort => box.read(BoxValue.boxPort) ?? '';
 
-  String get boxUsername => box.read(BoxValue.boxUsername) ?? '';
+  static String get boxUsername => box.read(BoxValue.boxUsername) ?? '';
 
-  String get boxPassword => box.read(BoxValue.boxPassword) ?? '';
+  static String get boxPassword => box.read(BoxValue.boxPassword) ?? '';
 
-  String get boxTopic => box.read(BoxValue.boxTopic) ?? '';
+  static String get boxTopic => box.read(BoxValue.boxTopic) ?? '';
 
-  void setHaveMqtt(bool value) {
+  static final BoxStorage _singleton = BoxStorage._internal();
+
+  factory BoxStorage() {
+    return _singleton;
+  }
+
+  BoxStorage._internal();
+
+  static void setHaveMqtt(bool value) {
     box.write(BoxValue.haveMqtt, value);
   }
 
-  void setBoxUrl(String value) {
+  static void setBoxUrl(String value) {
     box.write(BoxValue.boxUrl, value);
   }
 
-  void setBoxPort(String value) {
+  static void setBoxPort(String value) {
     box.write(BoxValue.boxPort, value);
   }
 
-  void setBoxUsername(String value) {
+  static void setBoxUsername(String value) {
     box.write(BoxValue.boxUsername, value);
   }
 
-  void setBoxPassword(String value) {
+  static void setBoxPassword(String value) {
     box.write(BoxValue.boxPassword, value);
   }
 
-  void setBoxTopic(String value) {
+  static void setBoxTopic(String value) {
     box.write(BoxValue.boxTopic, value);
   }
 
-  void clear() {
+  static void clear() {
     box.erase();
+  }
+
+  static void getAllData() {
+    print(BoxStorage.boxUrl);
+    print(BoxStorage.boxPort);
+    print(BoxStorage.boxUsername);
+    print(BoxStorage.boxPassword);
+    print(BoxStorage.boxTopic);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:garden_guard/controller/mqtt_ctrl/mqtt_ctrl.dart';
 import 'package:garden_guard/controller/splash_ctrl/splash_ctrl.dart';
 import 'package:garden_guard/ui/home/home_page.dart';
 import 'package:garden_guard/ui/mqtt_page/mqtt_page.dart';
@@ -33,7 +34,7 @@ abstract class AppPages {
       name: Routes.mqtt,
       page: () => const MqttPage(),
       binding: BindingsBuilder.put(
-        () => SplashCtrl(),
+        () => MqttCtrl(),
       ),
     ),
   ];

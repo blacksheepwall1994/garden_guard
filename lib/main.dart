@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 Future main() async {
   await GetStorage.init();
-
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
