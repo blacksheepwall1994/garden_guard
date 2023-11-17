@@ -12,17 +12,19 @@ class DataModel {
     this.soilMoisture1 = 0,
     this.soilMoisture2 = 0,
     this.waterLevel = 0,
+    this.lux = 0,
   });
 
-  final Dht? dht1;
-  final Dht? dht2;
-  final bool motor1;
-  final bool motor2;
-  final bool light;
-  final bool rainSensor;
-  final int soilMoisture1;
-  final int soilMoisture2;
-  final int waterLevel;
+  Dht? dht1;
+  Dht? dht2;
+  bool motor1;
+  bool motor2;
+  bool light;
+  bool rainSensor;
+  int soilMoisture1;
+  int soilMoisture2;
+  int waterLevel;
+  int lux;
 
   factory DataModel.fromJson(Map<String, dynamic> json) {
     return DataModel(
@@ -35,6 +37,7 @@ class DataModel {
       soilMoisture1: json["soilMoisture1"] ?? SoilStatus.normal,
       soilMoisture2: json["soilMoisture2"] ?? SoilStatus.normal,
       waterLevel: json["waterLevel"] ?? WaterEnum.low,
+      lux: json["lux"] ?? 0,
     );
   }
 
@@ -48,6 +51,7 @@ class DataModel {
         "soilMoisture1": soilMoisture1,
         "soilMoisture2": soilMoisture2,
         "waterLevel": waterLevel,
+        "lux": lux,
       };
 }
 
@@ -57,8 +61,8 @@ class Dht {
     this.humidity = 0,
   });
 
-  final int temperature;
-  final int humidity;
+  int temperature;
+  int humidity;
 
   factory Dht.fromJson(Map<String, dynamic> json) {
     return Dht(

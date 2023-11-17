@@ -6,7 +6,8 @@ import 'package:get/get.dart';
 class MqttCtrl extends GetxController {
   final formKey = GlobalKey<FormState>();
 
-  final TextEditingController mqttUrl = TextEditingController();
+  final TextEditingController mqttUrl = TextEditingController()
+    ..text = 'test.mosquitto.org';
 
   final TextEditingController mqttPort = TextEditingController()..text = '1883';
 
@@ -14,7 +15,8 @@ class MqttCtrl extends GetxController {
 
   final TextEditingController mqttPassword = TextEditingController();
 
-  final TextEditingController mqttTopic = TextEditingController();
+  final TextEditingController mqttTopic = TextEditingController()
+    ..text = 'garden_guard_quac';
 
   void saveMqtt() {
     if (!formKey.currentState!.validate()) {

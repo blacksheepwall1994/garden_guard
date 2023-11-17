@@ -95,14 +95,50 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
     case 1:
       return _buildDHTSensor(controller.dataModel.value.dht2);
     case 2:
-      return UtilWidget.buildText(
-          "Máy bơm 1: ${getStatusSensor(controller.dataModel.value.motor1)}");
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Switch(
+            value: controller.dataModel.value.motor1,
+            onChanged: (value) {
+              controller.dataModel.value.motor1 = value;
+              controller.publishMessage();
+            },
+          ),
+          UtilWidget.buildText(
+              "Máy bơm 1: ${getStatusSensor(controller.dataModel.value.motor1)}"),
+        ],
+      );
     case 3:
-      return UtilWidget.buildText(
-          "Máy bơm 2: ${getStatusSensor(controller.dataModel.value.motor2)}");
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Switch(
+            value: controller.dataModel.value.motor2,
+            onChanged: (value) {
+              controller.dataModel.value.motor2 = value;
+              controller.publishMessage();
+            },
+          ),
+          UtilWidget.buildText(
+              "Máy bơm 2: ${getStatusSensor(controller.dataModel.value.motor2)}"),
+        ],
+      );
     case 4:
-      return UtilWidget.buildText(
-          "Đèn: ${getStatusSensor(controller.dataModel.value.light)}");
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Switch(
+            value: controller.dataModel.value.light,
+            onChanged: (value) {
+              controller.dataModel.value.light = value;
+              controller.publishMessage();
+            },
+          ),
+          UtilWidget.buildText(
+              "Đèn: ${getStatusSensor(controller.dataModel.value.light)}"),
+        ],
+      );
     case 5:
       return UtilWidget.buildText(
           "Cảm biến mưa: \n${controller.dataModel.value.rainSensor == true ? 'Đang mưa' : 'Không mưa'}");
@@ -114,7 +150,10 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
           getSoilData(controller.dataModel.value.soilMoisture2));
     case 8:
       return UtilWidget.buildText(
-          getWaterLevel(controller.dataModel.value.waterLevel));
+          'Lượng nước: ${getWaterLevel(controller.dataModel.value.waterLevel)}');
+    case 9:
+      return UtilWidget.buildText(
+          'Cường độ ánh sáng: ${controller.dataModel.value.lux}');
     default:
       return UtilWidget.buildText("Lỗi đọc dữ liệu");
   }

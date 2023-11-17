@@ -10,6 +10,7 @@ class MqttPage extends GetView<MqttCtrl> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        bottom: true,
         child: Form(
           key: controller.formKey,
           child: Column(
