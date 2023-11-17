@@ -16,10 +16,10 @@ Widget _buildDHTSensor(Dht? dht) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     children: [
-      Text(
+      UtilWidget.buildText(
         "Nhiệt độ: ${dht?.temperature.toString() ?? '0'}",
       ),
-      Text(
+      UtilWidget.buildText(
         "Độ ẩm: ${dht?.humidity.toString() ?? '0'}",
       ),
     ],
@@ -46,6 +46,7 @@ Widget _buildItem(int index, HomeCtrl controller) {
               size: 100,
             ),
           ),
+          //TODO: máy bơm, đèn chuyển thành nút bấm
           _buildDataSensor(index, controller),
         ],
       ),
@@ -94,23 +95,27 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
     case 1:
       return _buildDHTSensor(controller.dataModel.value.dht2);
     case 2:
-      return Text(
+      return UtilWidget.buildText(
           "Máy bơm 1: ${getStatusSensor(controller.dataModel.value.motor1)}");
     case 3:
-      return Text(
+      return UtilWidget.buildText(
           "Máy bơm 2: ${getStatusSensor(controller.dataModel.value.motor2)}");
     case 4:
-      return Text("Đèn: ${getStatusSensor(controller.dataModel.value.light)}");
+      return UtilWidget.buildText(
+          "Đèn: ${getStatusSensor(controller.dataModel.value.light)}");
     case 5:
-      return Text(
-          "Cảm biến mưa: ${controller.dataModel.value.rainSensor == true ? 'Đang mưa' : 'Không mưa'}");
+      return UtilWidget.buildText(
+          "Cảm biến mưa: \n${controller.dataModel.value.rainSensor == true ? 'Đang mưa' : 'Không mưa'}");
     case 6:
-      return Text(getSoilData(controller.dataModel.value.soilMoisture1));
+      return UtilWidget.buildText(
+          getSoilData(controller.dataModel.value.soilMoisture1));
     case 7:
-      return Text(getSoilData(controller.dataModel.value.soilMoisture2));
+      return UtilWidget.buildText(
+          getSoilData(controller.dataModel.value.soilMoisture2));
     case 8:
-      return Text(getWaterLevel(controller.dataModel.value.waterLevel));
+      return UtilWidget.buildText(
+          getWaterLevel(controller.dataModel.value.waterLevel));
     default:
-      return const Text("Lỗi đọc dữ liệu");
+      return UtilWidget.buildText("Lỗi đọc dữ liệu");
   }
 }
