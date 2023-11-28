@@ -40,8 +40,9 @@ class HomePage extends GetView<HomeCtrl> {
                   Container(
                     height: 200,
                     width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      // color: Colors.blue,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: controller.isConnected.value

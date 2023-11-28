@@ -46,7 +46,6 @@ Widget _buildItem(int index, HomeCtrl controller) {
               size: 100,
             ),
           ),
-          //TODO: máy bơm, đèn chuyển thành nút bấm
           _buildDataSensor(index, controller),
         ],
       ),
@@ -102,7 +101,8 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
             value: controller.dataModel.value.motor1,
             onChanged: (value) {
               controller.dataModel.value.motor1 = value;
-              controller.publishMessage();
+              controller.publishMessage(
+                  payload: value ? "RELAY1ON" : "RELAY1OFF");
             },
           ),
           UtilWidget.buildText(
@@ -117,7 +117,8 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
             value: controller.dataModel.value.motor2,
             onChanged: (value) {
               controller.dataModel.value.motor2 = value;
-              controller.publishMessage();
+              controller.publishMessage(
+                  payload: value ? "RELAY2ON" : "RELAY2OFF");
             },
           ),
           UtilWidget.buildText(
@@ -132,7 +133,8 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
             value: controller.dataModel.value.light,
             onChanged: (value) {
               controller.dataModel.value.light = value;
-              controller.publishMessage();
+              controller.publishMessage(
+                  payload: value ? "RELAY3ON" : "RELAY3OFF");
             },
           ),
           UtilWidget.buildText(
@@ -141,7 +143,7 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
       );
     case 5:
       return UtilWidget.buildText(
-          "Cảm biến mưa: \n${controller.dataModel.value.rainSensor == true ? 'Đang mưa' : 'Không mưa'}");
+          "Cảm biến mưa: \n${controller.dataModel.value.rainSensor == 0 ? 'Đang mưa' : 'Không mưa'}");
     case 6:
       return UtilWidget.buildText(
           getSoilData(controller.dataModel.value.soilMoisture1));

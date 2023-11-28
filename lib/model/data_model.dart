@@ -8,7 +8,7 @@ class DataModel {
     this.motor1 = false,
     this.motor2 = false,
     this.light = false,
-    this.rainSensor = false,
+    this.rainSensor = 0,
     this.soilMoisture1 = 0,
     this.soilMoisture2 = 0,
     this.waterLevel = 0,
@@ -20,7 +20,7 @@ class DataModel {
   bool motor1;
   bool motor2;
   bool light;
-  bool rainSensor;
+  int rainSensor;
   int soilMoisture1;
   int soilMoisture2;
   int waterLevel;
@@ -33,7 +33,7 @@ class DataModel {
       motor1: json["motor1"] ?? false,
       motor2: json["motor2"] ?? false,
       light: json["light"] ?? false,
-      rainSensor: json["rainSensor"] ?? false,
+      rainSensor: json["rainSensor"] ?? 0,
       soilMoisture1: json["soilMoisture1"] ?? SoilStatus.normal,
       soilMoisture2: json["soilMoisture2"] ?? SoilStatus.normal,
       waterLevel: json["waterLevel"] ?? WaterEnum.low,

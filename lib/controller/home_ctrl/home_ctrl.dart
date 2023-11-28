@@ -1,36 +1,52 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:garden_guard/components/garden_components.dart';
-import 'package:garden_guard/model/data_model.dart';
+import 'package:garden_guard/garden_guard_src.dart';
 import 'package:garden_guard/routes/routes.dart';
-import 'package:garden_guard/utils/box.dart';
-import 'package:garden_guard/utils/logger.dart';
 import 'package:get/get.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomeCtrl extends GetxController {
   final client = MqttServerClient(BoxStorage.boxUrl, '');
+
   late final WebSocketChannel? channel;
-  static const String url = "ws://192.168.0.101:3000";
+
+  late String url;
 
   RxBool isLoading = false.obs;
+
   RxBool isConnected = false.obs;
+
+  RxBool ifOffline = false.obs;
+
   Rx<DataModel> dataModel = DataModel().obs;
 
   @override
   void onInit() async {
+    await getSocketUrl();
     await connect();
     connectWebSocket();
     super.onInit();
   }
 
+  Future<void> getSocketUrl() async {
+    final wifiIP = await NetworkInfo().getWifiIP(); // 192.168.1.43
+    url = "ws://$wifiIP:3000";
+  }
+
   void connectWebSocket() {
-    channel = IOWebSocketChannel.connect(Uri.parse(url));
-    isConnected.value = true;
+    try {
+      channel = IOWebSocketChannel.connect(Uri.parse(url));
+      isConnected.value = true;
+    } on Exception catch (e) {
+      logger.d(e);
+    }
   }
 
   Future<void> connect() async {
@@ -73,7 +89,7 @@ class HomeCtrl extends GetxController {
         final String payload =
             MqttPublishPayload.bytesToStringAsString(message.payload.message);
         dataModel.value = DataModel.fromJson(jsonDecode(payload));
-        logger.i('Received message:$payload from topic: ${c[0].topic}>');
+        // logger.i('Received message:$payload from topic: ${c[0].topic}>');
       },
     );
   }
@@ -90,11 +106,11 @@ class HomeCtrl extends GetxController {
     );
   }
 
-  Future<void> publishMessage() async {
+  Future<void> publishMessage({required String payload}) async {
     final builder = MqttClientPayloadBuilder();
-    builder.addString(jsonEncode(dataModel.value));
+    builder.addString(payload);
     client.publishMessage(
-        BoxStorage.boxTopic, MqttQos.atLeastOnce, builder.payload!);
+        "${BoxStorage.boxTopic}_send", MqttQos.atLeastOnce, builder.payload!);
   }
 
   Future<void> logOut() async {
