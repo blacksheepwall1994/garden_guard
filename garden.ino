@@ -23,6 +23,10 @@ const uint16_t mqtt_port = 1883; // Port của MQT
 #define RELAY2 14
 #define RELAY3 27
 
+#define soilWet 500 // Define max value we consider soil 'wet'
+
+#define soilDry 750 // Define min value we consider soil 'dry'
+
 #define DHTTYPE DHT11
 
 DHT dht1(DHTPIN1, DHTTYPE);
@@ -31,6 +35,8 @@ DHT dht2(DHTPIN2, DHTTYPE);
 bool motor1 = false;
 bool motor2 = false;
 bool isLightOn = false;
+int soil1 = 0;
+int soil2 = 0;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -169,10 +175,26 @@ void reconnect()
 }
 
 long lastMsg = 0;
+
+void getStatusMoisture(int pin)
+{
+    int soil = 0;
+    if (analogRead(pin) < soilWet)
+    {
+        soil = 2;
+    }
+    else if (analogRead(pin) >= soilWet && analogRead(pin) < soilDry)
+    {
+        soil = 1;
+    }
+    return soil;
+}
+
 void loop()
 {
-    int soil1 = analogRead(SOIL1);
-    int soil2 = analogRead(SOIL2);
+
+    // int soil1 = analogRead(SOIL1);
+    // int soil2 = analogRead(SOIL2);
     int water = analogRead(WATER);
     int lux = digitalRead(LIGHT);
     int isRain = analogRead(RAIN);
@@ -207,13 +229,15 @@ void loop()
         doc["motor2"] = motor2;
         doc["light"] = isLightOn;
         doc["rainSensor"] = isRain;
-        doc["soilMoisture1"] = soil1;
-        doc["soilMoisture2"] = soil2;
+        doc["soilMoisture1"] = getStatusMoisture(SOIL1);
+        doc["soilMoisture2"] = getStatusMoisture(SOIL2);
         doc["waterLevel"] = water;
         doc["lux"] = lux;
         char buffer[256];
         serializeJson(doc, buffer);
         client.publish("garden_guard_quac", buffer);
         Serial.println(buffer);
+
+        delay(1000);
     }
 }
