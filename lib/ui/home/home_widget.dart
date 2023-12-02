@@ -160,3 +160,91 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
       return UtilWidget.buildText("Lỗi đọc dữ liệu");
   }
 }
+
+Widget _buildBodyLandscape(HomeCtrl controller) {
+  return Scaffold(
+    body: Obx(
+      () => Row(
+        children: [
+          _buildVideoCapture(controller),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildVideoCapture(HomeCtrl controller) {
+  return controller.image.value != null
+      ? Stack(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.memory(
+                controller.image.value ?? Uint8List.fromList([]),
+                gaplessPlayback: true,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: IconButton(
+                onPressed: () => SystemChrome.setPreferredOrientations(
+                  [
+                    DeviceOrientation.landscapeLeft,
+                    DeviceOrientation.landscapeRight,
+                  ],
+                ),
+                icon: const Icon(
+                  Icons.fullscreen_rounded,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        )
+      : const SizedBox.shrink();
+}
+
+Widget _buildBodyPortrait(HomeCtrl controller) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Trang chủ'),
+      actions: [
+        IconButton(
+          onPressed: () {
+            controller.showAlert();
+          },
+          icon: const Icon(Icons.logout),
+        ),
+      ],
+    ),
+    body: Obx(
+      () => Stack(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: Column(
+              children: [
+                _buildVideoCapture(controller),
+                Expanded(
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    itemCount: GardenComponent.iconData.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                    ),
+                    itemBuilder: (context, index) {
+                      return _buildItem(index, controller);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (controller.isLoading.value == true) ..._buildLoadingForm(),
+        ],
+      ),
+    ),
+  );
+}

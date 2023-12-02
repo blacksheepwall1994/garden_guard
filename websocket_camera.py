@@ -1,37 +1,45 @@
-import websockets
-import asyncio
 import cv2
-import base64
 
-port = 3000
-print("Started server on port:", port)
+# Replace 'your_video_file.mp4' with the path to your video file
+video_file = "C:/Users/Admin/Downloads/test.mov"
 
-async def transmit(websocket, path):
-    print("Client Connected !")
-    try:
-        cap = cv2.VideoCapture(0)
+# Set up the RTSP server
+def rtsp_server():
+    # Open the video file
+    cap = cv2.VideoCapture(video_file)
 
-        while cap.isOpened():
-            _, frame = cap.read()
+    # Get video properties
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-            # Mirror the frame horizontally
-            mirrored_frame = cv2.flip(frame, 1)
+    # Define the RTSP server address
+    rtsp_url = 'rtsp://localhost:8554/live'
 
-            encoded = cv2.imencode('.jpg', mirrored_frame)[1]
+    # Define the codec and create VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'H264')
+    server = cv2.VideoWriter(rtsp_url, fourcc, 20.0, (width, height))
 
-            data = str(base64.b64encode(encoded))
-            data = data[2:len(data)-1]
+    while True:
+        ret, frame = cap.read()
 
-            await websocket.send(data)
+        if not ret:
+            print("Failed to capture frame.")
+            break
 
-            cv2.imshow("Transmission", frame)
+        # Display the frame locally
+        cv2.imshow('Local Video', frame)
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-    except websockets.connection.ConnectionClosed as e:
-        print("Client Disconnected !")
+        # Write the frame to the RTSP server
+        server.write(frame)
 
-start_server = websockets.serve(transmit, port=port)
+        # Break the loop when 'q' key is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+    # Release resources
+    cap.release()
+    server.release()
+    cv2.destroyAllWindows()
+
+if __name__ == '__main__':
+    rtsp_server()

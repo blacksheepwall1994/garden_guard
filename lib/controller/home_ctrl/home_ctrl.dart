@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:garden_guard/components/garden_components.dart';
 import 'package:garden_guard/garden_guard_src.dart';
 import 'package:garden_guard/routes/routes.dart';
@@ -15,9 +19,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 class HomeCtrl extends GetxController {
   final client = MqttServerClient(BoxStorage.boxUrl, '');
 
-  late final WebSocketChannel? channel;
-
-  late String url;
+  WebSocketChannel? channel;
 
   RxBool isLoading = false.obs;
 
@@ -27,23 +29,36 @@ class HomeCtrl extends GetxController {
 
   Rx<DataModel> dataModel = DataModel().obs;
 
+  final image = Rx<Uint8List?>(null);
+
+  final VlcPlayerController vlcViewController = VlcPlayerController.network(
+    "rtsp://localhost:8554/live",
+    autoPlay: true,
+  );
+
   @override
   void onInit() async {
-    await getSocketUrl();
-    await connect();
-    connectWebSocket();
     super.onInit();
+    await connect();
+    await connectWebSocket();
   }
 
-  Future<void> getSocketUrl() async {
+  Future<void> connectWebSocket() async {
     final wifiIP = await NetworkInfo().getWifiIP(); // 192.168.1.43
-    url = "ws://$wifiIP:3000";
-  }
-
-  void connectWebSocket() {
+    String url = "ws://192.168.1.135:3000";
     try {
       channel = IOWebSocketChannel.connect(Uri.parse(url));
       isConnected.value = true;
+      SystemChrome.setPreferredOrientations(
+        [
+          DeviceOrientation.portraitUp,
+        ],
+      );
+      // Listen stream
+      // gan image
+      channel!.stream.listen((event) {
+        image.value = base64Decode(event);
+      });
     } on Exception catch (e) {
       logger.d(e);
     }
