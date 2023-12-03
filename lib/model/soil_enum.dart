@@ -1,5 +1,5 @@
-enum SoilStatus{
+enum SoilStatus {
   dry,
+  normal,
   wet,
-  normal
 }

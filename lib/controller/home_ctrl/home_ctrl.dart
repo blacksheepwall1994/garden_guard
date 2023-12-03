@@ -6,6 +6,8 @@ import 'package:garden_guard/components/garden_components.dart';
 import 'package:garden_guard/garden_guard_src.dart';
 import 'package:garden_guard/routes/routes.dart';
 import 'package:get/get.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:network_info_plus/network_info_plus.dart';
@@ -25,28 +27,41 @@ class HomeCtrl extends GetxController {
 
   RxBool ifOffline = false.obs;
 
+  RxBool isAuto = false.obs;
+
   Rx<DataModel> dataModel = DataModel().obs;
+
+  // Create a [Player] to control playback.
+  late final player = Player();
+  // Create a [VideoController] to handle video output from [Player].
+  late final controller = VideoController(player);
 
   @override
   void onInit() async {
     await getSocketUrl();
+    await connectWebSocket();
     await connect();
-    connectWebSocket();
     super.onInit();
   }
+
+  // @override
+  // void onDispose() {
+  //   client.disconnect();
+  //   videoController.dispose();
+  //   chewieController?.dispose();
+  //   super.onClose();
+  // }
 
   Future<void> getSocketUrl() async {
     final wifiIP = await NetworkInfo().getWifiIP(); // 192.168.1.43
     url = "ws://$wifiIP:3000";
   }
 
-  void connectWebSocket() {
-    try {
-      channel = IOWebSocketChannel.connect(Uri.parse(url));
-      isConnected.value = true;
-    } on Exception catch (e) {
-      logger.d(e);
-    }
+  Future connectWebSocket() async {
+    channel = IOWebSocketChannel.connect(Uri.parse(url));
+    await player.open(Media(url));
+
+    isConnected.value = true;
   }
 
   Future<void> connect() async {
