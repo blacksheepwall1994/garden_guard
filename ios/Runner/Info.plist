@@ -53,9 +53,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSAppTransport Security</key>
+	<key>NSAppTransportSecurity</key>
 	<dict>
-	<key>NSAllowsArbitrary Loads </key>
+	<key>NSAllowsArbitraryLoads</key>
 	<true/>
 	</dict>
 </dict>

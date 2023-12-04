@@ -14,18 +14,20 @@
 
 // #define DHTPIN1 18
 // #define DHTPIN2 19
-// #define LIGHT 32
-// #define RAIN 33
-// #define WATER 26
-// #define SOIL1 25
-// #define SOIL2 16
+// #define lightSensor 32
+// #define rainSensor 33
+// #define waterSensor 26
+// #define soilSensor1 25
+// #define soilSensor2 16
 // #define RELAY1 17
 // #define RELAY2 14
 // #define RELAY3 27
 
-// #define soilWet 500 // Define max value we consider soil 'wet'
+// #define soilWet 2000 // Define max value we consider soil 'wet'
 
-// #define soilDry 750 // Define min value we consider soil 'dry'
+// #define soilDry 4095 // Define min value we consider soil 'dry'
+
+// #define maxValue 4095
 
 // #define DHTTYPE DHT11
 
@@ -34,16 +36,19 @@
 
 // bool motor1 = false;
 // bool motor2 = false;
-// bool isLightOn = false;
+// bool isFanOn = false;
 // int soil1 = 0;
 // int soil2 = 0;
+// bool isRain = false;
+// bool isMorning = false;
+// bool isWaterEmpty = false;
+// bool isAuto = false;
 
 // WiFiClient espClient;
 // PubSubClient client(espClient);
 
 // void setup()
 // {
-//     Serial.begin(115200);
 
 //     setup_wifi();                             // thực hiện kết nối Wifi
 //     client.setServer(mqtt_server, mqtt_port); // cài đặt server và lắng nghe client ở port 1883
@@ -56,10 +61,11 @@
 //     client.subscribe("garden_guard_quac");
 //     client.subscribe("garden_guard_quac_send");
 
-//     pinMode(LIGHT, OUTPUT);
-//     pinMode(RAIN, OUTPUT);
-//     pinMode(SOIL1, OUTPUT);
-//     pinMode(SOIL2, OUTPUT);
+//     pinMode(soilSensor1, OUTPUT);
+//     pinMode(soilSensor2, OUTPUT);
+//     pinMode(lightSensor, OUTPUT);
+//     pinMode(rainSensor, OUTPUT);
+//     pinMode(waterSensor, OUTPUT);
 //     pinMode(RELAY1, OUTPUT);
 //     pinMode(RELAY2, OUTPUT);
 //     pinMode(RELAY3, OUTPUT);
@@ -68,17 +74,15 @@
 //     dht2.begin();
 
 //     turnedOff();
+
+//     Serial.begin(115200);
 // }
 
 // void turnedOff()
 // {
-//     digitalWrite(LIGHT, LOW);
-//     digitalWrite(RAIN, LOW);
-//     digitalWrite(SOIL1, LOW);
-//     digitalWrite(SOIL2, LOW);
-//     digitalWrite(RELAY1, LOW);
-//     digitalWrite(RELAY2, LOW);
-//     digitalWrite(RELAY3, LOW);
+//     digitalWrite(RELAY1, HIGH);
+//     digitalWrite(RELAY2, HIGH);
+//     digitalWrite(RELAY3, HIGH);
 // }
 
 // // Hàm kết nối wifi
@@ -114,32 +118,40 @@
 //         if (message == "RELAY1ON")
 //         {
 //             motor1 = true;
-//             digitalWrite(RELAY1, HIGH);
+//             digitalWrite(RELAY1, LOW);
 //         }
 //         if (message == "RELAY2ON")
 //         {
 //             motor2 = true;
-//             digitalWrite(RELAY2, HIGH);
+//             digitalWrite(RELAY2, LOW);
 //         }
 //         if (message == "RELAY3ON")
 //         {
-//             isLightOn = true;
-//             digitalWrite(RELAY3, HIGH);
+//             isFanOn = true;
+//             digitalWrite(RELAY3, LOW);
 //         }
 //         if (message == "RELAY1OFF")
 //         {
 //             motor1 = false;
-//             digitalWrite(RELAY1, LOW);
+//             digitalWrite(RELAY1, HIGH);
 //         }
 //         if (message == "RELAY2OFF")
 //         {
 //             motor2 = false;
-//             digitalWrite(RELAY2, LOW);
+//             digitalWrite(RELAY2, HIGH);
 //         }
 //         if (message == "RELAY3OFF")
 //         {
-//             isLightOn = false;
-//             digitalWrite(RELAY3, LOW);
+//             isFanOn = false;
+//             digitalWrite(RELAY3, HIGH);
+//         }
+//         if (message == "AUTOON")
+//         {
+//             isAuto = true;
+//         }
+//         if (message == "AUTOOFF")
+//         {
+//             isAuto = false;
 //         }
 //     }
 
@@ -176,14 +188,14 @@
 
 // long lastMsg = 0;
 
-// void getStatusMoisture(int pin)
+// int getStatusMoisture(int soilData)
 // {
 //     int soil = 0;
-//     if (analogRead(pin) < soilWet)
+//     if (soilData < soilWet)
 //     {
 //         soil = 2;
 //     }
-//     else if (analogRead(pin) >= soilWet && analogRead(pin) < soilDry)
+//     else if (soilData >= soilWet && soilData < soilDry)
 //     {
 //         soil = 1;
 //     }
@@ -192,13 +204,6 @@
 
 // void loop()
 // {
-
-//     // int soil1 = analogRead(SOIL1);
-//     // int soil2 = analogRead(SOIL2);
-//     int water = analogRead(WATER);
-//     int lux = digitalRead(LIGHT);
-//     int isRain = analogRead(RAIN);
-
 //     if (!client.connected())
 //     { // Kiểm tra kết nối
 //         Serial.println("Đã kết nối lại:");
@@ -210,12 +215,66 @@
 //     if (now - lastMsg > 2000)
 //     {
 //         lastMsg = now;
+//         soil1 = analogRead(soilSensor1);
+//         soil2 = analogRead(soilSensor2);
+
+//         int soilMoisture1 = getStatusMoisture(soil1);
+//         int soilMoisture2 = getStatusMoisture(soil2);
+
 //         int h1 = dht1.readHumidity();
 //         int t1 = dht1.readTemperature();
 
 //         int h2 = dht2.readHumidity();
 //         int t2 = dht2.readTemperature();
 
+//         int rain = analogRead(rainSensor);
+//         int water = analogRead(waterSensor);
+//         int lux = analogRead(lightSensor);
+//         if (lux == maxValue)
+//         {
+//             isMorning = false;
+//         }
+//         else
+//         {
+//             isMorning = true;
+//         }
+
+//         if (water == maxValue)
+//         {
+//             isWaterEmpty = false;
+//         }
+//         else
+//         {
+//             isWaterEmpty = true;
+//         }
+//         if (isAuto == true)
+//         {
+//             if (rain == maxValue)
+//             {
+//                 isRain = false;
+//             }
+//             else
+//             {
+//                 isRain = true;
+//                 if (motor1 == true || motor2 == true)
+//                 {
+//                     motor1 = false;
+//                     motor2 = false;
+//                     digitalWrite(RELAY1, HIGH);
+//                     digitalWrite(RELAY2, HIGH);
+//                 }
+//             }
+//             if (t1 > 30 || t2 > 30)
+//             {
+//                 isFanOn = true;
+//                 digitalWrite(RELAY3, LOW);
+//             }
+//             else
+//             {
+//                 isFanOn = false;
+//                 digitalWrite(RELAY3, HIGH);
+//             }
+//         }
 //         StaticJsonDocument<256> doc;
 
 //         JsonObject dht1 = doc.createNestedObject("dht1");
@@ -227,17 +286,17 @@
 //         dht2["humidity"] = h2;
 //         doc["motor1"] = motor1;
 //         doc["motor2"] = motor2;
-//         doc["light"] = isLightOn;
+//         doc["fan"] = isFanOn;
 //         doc["rainSensor"] = isRain;
-//         doc["soilMoisture1"] = getStatusMoisture(SOIL1);
-//         doc["soilMoisture2"] = getStatusMoisture(SOIL2);
-//         doc["waterLevel"] = water;
-//         doc["lux"] = lux;
+//         doc["soilMoisture1"] = 1;
+//         doc["soilMoisture2"] = 1;
+//         doc["waterLevel"] = isWaterEmpty;
+//         doc["lux"] = isMorning;
+//         doc["auto"] = isAuto;
+
 //         char buffer[256];
 //         serializeJson(doc, buffer);
 //         client.publish("garden_guard_quac", buffer);
-//         Serial.println(buffer);
-
-//         delay(1000);
+//         // Serial.println(buffer);
 //     }
 // }

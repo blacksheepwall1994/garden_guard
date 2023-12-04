@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:garden_guard/components/garden_components.dart';
@@ -9,8 +10,6 @@ import 'package:garden_guard/routes/routes.dart';
 import 'package:get/get.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:network_info_plus/network_info_plus.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomeCtrl extends GetxController {
@@ -29,7 +28,7 @@ class HomeCtrl extends GetxController {
   final image = Rx<Uint8List?>(null);
 
   VlcPlayerController vlcViewController = VlcPlayerController.network(
-    "rtsp://localhost:8554",
+    "http://sheepu.local:8081/live.flv",
     autoPlay: true,
     hwAcc: HwAcc.auto,
     options: VlcPlayerOptions(),
@@ -37,35 +36,21 @@ class HomeCtrl extends GetxController {
 
   @override
   void onInit() async {
+    super.onInit();
     await connect();
     await connectWebSocket();
-    super.onInit();
   }
 
-  // @override
-  // void onDispose() {
-  //   client.disconnect();
-  //   videoController.dispose();
-  //   chewieController?.dispose();
-  //   super.onClose();
-  // }
-
   Future<void> connectWebSocket() async {
-    final wifiIP = await NetworkInfo().getWifiIP(); // 192.168.1.43
-    String url = "ws://192.168.1.135:3000";
     try {
-      channel = IOWebSocketChannel.connect(Uri.parse(url));
+      // channel = IOWebSocketChannel.connect(Uri.parse(url));
+      vlcViewController.play();
       isConnected.value = true;
       SystemChrome.setPreferredOrientations(
         [
           DeviceOrientation.portraitUp,
         ],
       );
-      // Listen stream
-      // gan image
-      channel!.stream.listen((event) {
-        image.value = base64Decode(event);
-      });
     } on Exception catch (e) {
       logger.d(e);
     }
