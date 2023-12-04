@@ -14,6 +14,7 @@ class GardenComponent {
     7: Icon(Icons.grass),
     8: Icon(Icons.water),
     9: Icon(Icons.lightbulb_circle),
+    10: Icon(Icons.auto_awesome),
   };
   static Widget showDialog(HomeCtrl controller) {
     return AlertDialog(

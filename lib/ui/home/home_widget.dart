@@ -102,7 +102,9 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
             onChanged: (value) {
               controller.dataModel.value.motor1 = value;
               controller.publishMessage(
-                  payload: value ? "RELAY1ON" : "RELAY1OFF");
+                  payload: controller.dataModel.value.motor1
+                      ? "RELAY1ON"
+                      : "RELAY1OFF");
             },
           ),
           UtilWidget.buildText(
@@ -118,7 +120,9 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
             onChanged: (value) {
               controller.dataModel.value.motor2 = value;
               controller.publishMessage(
-                  payload: value ? "RELAY2ON" : "RELAY2OFF");
+                  payload: controller.dataModel.value.motor2
+                      ? "RELAY2ON"
+                      : "RELAY2OFF");
             },
           ),
           UtilWidget.buildText(
@@ -130,20 +134,22 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Switch(
-            value: controller.dataModel.value.light,
+            value: controller.dataModel.value.fan,
             onChanged: (value) {
-              controller.dataModel.value.light = value;
+              controller.dataModel.value.fan = value;
               controller.publishMessage(
-                  payload: value ? "RELAY3ON" : "RELAY3OFF");
+                  payload: controller.dataModel.value.fan
+                      ? "RELAY3ON"
+                      : "RELAY3OFF");
             },
           ),
           UtilWidget.buildText(
-              "Đèn: ${getStatusSensor(controller.dataModel.value.light)}"),
+              "Quạt: ${getStatusSensor(controller.dataModel.value.fan)}"),
         ],
       );
     case 5:
       return UtilWidget.buildText(
-          "Cảm biến mưa: \n${controller.dataModel.value.rainSensor == 0 ? 'Đang mưa' : 'Không mưa'}");
+          "Cảm biến mưa: \n${controller.dataModel.value.rainSensor ? 'Đang mưa' : 'Không mưa'}");
     case 6:
       return UtilWidget.buildText(
           getSoilData(controller.dataModel.value.soilMoisture1));
@@ -152,10 +158,27 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
           getSoilData(controller.dataModel.value.soilMoisture2));
     case 8:
       return UtilWidget.buildText(
-          'Lượng nước: ${getWaterLevel(controller.dataModel.value.waterLevel)}');
+          'Lượng nước: ${!controller.dataModel.value.waterLevel ? "Không đủ nước" : "Đủ nước"}');
     case 9:
       return UtilWidget.buildText(
-          'Cường độ ánh sáng: ${controller.dataModel.value.lux}');
+          'Nắng: ${controller.dataModel.value.lux == 0 ? "Gắt" : "Bình thường"}');
+    case 10:
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Switch(
+            value: controller.dataModel.value.isAuto,
+            onChanged: (value) {
+              controller.isAuto.value = value;
+              controller.publishMessage(
+                  payload:
+                      controller.dataModel.value.isAuto ? "AUTOON" : "AUTOOFF");
+            },
+          ),
+          UtilWidget.buildText(
+              "Chế độ tự động: ${getStatusSensor(controller.dataModel.value.isAuto)}"),
+        ],
+      );
     default:
       return UtilWidget.buildText("Lỗi đọc dữ liệu");
   }

@@ -10,6 +10,8 @@ import 'package:garden_guard/components/garden_components.dart';
 import 'package:garden_guard/garden_guard_src.dart';
 import 'package:garden_guard/routes/routes.dart';
 import 'package:get/get.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:media_kit_video/media_kit_video.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:network_info_plus/network_info_plus.dart';
@@ -27,6 +29,8 @@ class HomeCtrl extends GetxController {
 
   RxBool ifOffline = false.obs;
 
+  RxBool isAuto = false.obs;
+
   Rx<DataModel> dataModel = DataModel().obs;
 
   final image = Rx<Uint8List?>(null);
@@ -42,6 +46,14 @@ class HomeCtrl extends GetxController {
     await connect();
     await connectWebSocket();
   }
+
+  // @override
+  // void onDispose() {
+  //   client.disconnect();
+  //   videoController.dispose();
+  //   chewieController?.dispose();
+  //   super.onClose();
+  // }
 
   Future<void> connectWebSocket() async {
     final wifiIP = await NetworkInfo().getWifiIP(); // 192.168.1.43

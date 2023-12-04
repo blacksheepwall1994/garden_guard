@@ -53,5 +53,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSAppTransport Security</key>
+	<dict>
+	<key>NSAllowsArbitrary Loads </key>
+	<true/>
+	</dict>
 </dict>
 </plist>

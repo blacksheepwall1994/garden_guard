@@ -7,7 +7,6 @@ import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:garden_guard/components/garden_components.dart';
 import 'package:garden_guard/garden_guard_src.dart';
 import 'package:garden_guard/utils/util_widget.dart';
-
 import 'package:get/get.dart';
 
 part 'home_widget.dart';
