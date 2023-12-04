@@ -206,35 +206,32 @@ Widget _buildBodyLandscape(HomeCtrl controller) {
 }
 
 Widget _buildVideoCapture(HomeCtrl controller) {
-  return controller.image.value != null
-      ? Stack(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.memory(
-                controller.image.value ?? Uint8List.fromList([]),
-                gaplessPlayback: true,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: IconButton(
-                onPressed: () => SystemChrome.setPreferredOrientations(
-                  [
-                    DeviceOrientation.landscapeLeft,
-                    DeviceOrientation.landscapeRight,
-                  ],
-                ),
-                icon: const Icon(
-                  Icons.fullscreen_rounded,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ],
-        )
-      : const SizedBox.shrink();
+  return Stack(
+    children: [
+      VlcPlayer(
+        controller: controller.vlcViewController,
+        aspectRatio: 16 / 9,
+        placeholder: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      Align(
+        alignment: Alignment.bottomRight,
+        child: IconButton(
+          onPressed: () => SystemChrome.setPreferredOrientations(
+            [
+              DeviceOrientation.landscapeLeft,
+              DeviceOrientation.landscapeRight,
+            ],
+          ),
+          icon: const Icon(
+            Icons.fullscreen_rounded,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    ],
+  );
 }
 
 Widget _buildBodyPortrait(HomeCtrl controller) {
@@ -257,7 +254,13 @@ Widget _buildBodyPortrait(HomeCtrl controller) {
             bottom: false,
             child: Column(
               children: [
-                _buildVideoCapture(controller),
+                VlcPlayer(
+                  controller: controller.vlcViewController,
+                  aspectRatio: 16 / 9,
+                  placeholder: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
                 Expanded(
                   child: GridView.builder(
                     shrinkWrap: true,

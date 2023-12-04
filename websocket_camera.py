@@ -1,24 +1,23 @@
 import cv2
 
 # Replace 'your_video_file.mp4' with the path to your video file
-video_file = "C:/Users/Admin/Downloads/test.mov"
+video_path = "C:/Users/Admin/Downloads/test.mov"
 
-# Set up the RTSP server
-def rtsp_server():
-    # Open the video file
-    cap = cv2.VideoCapture(video_file)
+# Set the RTSP stream URL
+rtsp_url = "rtsp://localhost:8554"
 
-    # Get video properties
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+# Open the local video file
+cap = cv2.VideoCapture(video_path)
 
-    # Define the RTSP server address
-    rtsp_url = 'rtsp://localhost:8554/live'
+# Get the video width and height
+width = int(cap.get(3))
+height = int(cap.get(4))
 
-    # Define the codec and create VideoWriter object
-    fourcc = cv2.VideoWriter_fourcc(*'H264')
-    server = cv2.VideoWriter(rtsp_url, fourcc, 20.0, (width, height))
+# Set the codec and create a VideoWriter object for RTSP streaming
+fourcc = cv2.VideoWriter_fourcc(*'H264')
+rtsp_stream = cv2.VideoWriter(rtsp_url, fourcc, 20.0, (width, height))
 
+try:
     while True:
         ret, frame = cap.read()
 
@@ -26,20 +25,18 @@ def rtsp_server():
             print("Failed to capture frame.")
             break
 
-        # Display the frame locally
-        cv2.imshow('Local Video', frame)
+        # Write the frame to the RTSP stream
+        rtsp_stream.write(frame)
 
-        # Write the frame to the RTSP server
-        server.write(frame)
+        # Display the frame (optional)
+        cv2.imshow("Frame", frame)
 
-        # Break the loop when 'q' key is pressed
+        # Break the loop if 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    # Release resources
+finally:
+    # Release the resources
     cap.release()
-    server.release()
+    rtsp_stream.release()
     cv2.destroyAllWindows()
-
-if __name__ == '__main__':
-    rtsp_server()

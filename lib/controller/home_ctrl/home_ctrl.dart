@@ -28,16 +28,18 @@ class HomeCtrl extends GetxController {
 
   final image = Rx<Uint8List?>(null);
 
-  final VlcPlayerController vlcViewController = VlcPlayerController.network(
-    "rtsp://localhost:8554/live",
+  VlcPlayerController vlcViewController = VlcPlayerController.network(
+    "rtsp://localhost:8554",
     autoPlay: true,
+    hwAcc: HwAcc.auto,
+    options: VlcPlayerOptions(),
   );
 
   @override
   void onInit() async {
-    super.onInit();
     await connect();
     await connectWebSocket();
+    super.onInit();
   }
 
   // @override
