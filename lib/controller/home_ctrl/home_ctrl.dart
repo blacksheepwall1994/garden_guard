@@ -24,8 +24,6 @@ class HomeCtrl extends GetxController {
 
   RxBool ifOffline = false.obs;
 
-  RxBool isAuto = false.obs;
-
   Rx<DataModel> dataModel = DataModel().obs;
 
   final image = Rx<Uint8List?>(null);

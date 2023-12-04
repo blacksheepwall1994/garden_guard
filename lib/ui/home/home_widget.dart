@@ -27,16 +27,16 @@ Widget _buildDHTSensor(Dht? dht) {
 }
 
 Widget _buildItem(int index, HomeCtrl controller) {
-  return Obx(
-    () => Container(
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Colors.grey.withOpacity(0.5),
-        ),
+  return Container(
+    margin: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(
+        color: Colors.grey.withOpacity(0.5),
       ),
-      child: Stack(
+    ),
+    child: Obx(
+      () => Stack(
         alignment: Alignment.center,
         children: [
           Center(
@@ -98,17 +98,19 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Switch(
-            value: controller.dataModel.value.motor1,
+            value: controller.dataModel.value.motor1.value,
             onChanged: (value) {
-              controller.dataModel.value.motor1 = value;
+              controller.dataModel.value.motor1.value = value;
               controller.publishMessage(
-                  payload: controller.dataModel.value.motor1
-                      ? "RELAY1ON"
-                      : "RELAY1OFF");
+                payload: controller.dataModel.value.motor1.value
+                    ? "RELAY1ON"
+                    : "RELAY1OFF",
+              );
+              controller.update();
             },
           ),
           UtilWidget.buildText(
-              "Máy bơm 1: ${getStatusSensor(controller.dataModel.value.motor1)}"),
+              "Máy bơm 1: ${getStatusSensor(controller.dataModel.value.motor1.value)}"),
         ],
       );
     case 3:
@@ -116,17 +118,19 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Switch(
-            value: controller.dataModel.value.motor2,
+            value: controller.dataModel.value.motor2.value,
             onChanged: (value) {
-              controller.dataModel.value.motor2 = value;
+              controller.dataModel.value.motor2.value = value;
               controller.publishMessage(
-                  payload: controller.dataModel.value.motor2
-                      ? "RELAY2ON"
-                      : "RELAY2OFF");
+                payload: controller.dataModel.value.motor2.value
+                    ? "RELAY2ON"
+                    : "RELAY2OFF",
+              );
+              controller.update();
             },
           ),
           UtilWidget.buildText(
-              "Máy bơm 2: ${getStatusSensor(controller.dataModel.value.motor2)}"),
+              "Máy bơm 2: ${getStatusSensor(controller.dataModel.value.motor2.value)}"),
         ],
       );
     case 4:
@@ -134,17 +138,19 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Switch(
-            value: controller.dataModel.value.fan,
+            value: controller.dataModel.value.fan.value,
             onChanged: (value) {
-              controller.dataModel.value.fan = value;
+              controller.dataModel.value.fan.value = value;
               controller.publishMessage(
-                  payload: controller.dataModel.value.fan
-                      ? "RELAY3ON"
-                      : "RELAY3OFF");
+                payload: controller.dataModel.value.fan.value
+                    ? "RELAY3ON"
+                    : "RELAY3OFF",
+              );
+              controller.update();
             },
           ),
           UtilWidget.buildText(
-              "Quạt: ${getStatusSensor(controller.dataModel.value.fan)}"),
+              "Quạt: ${getStatusSensor(controller.dataModel.value.fan.value)}"),
         ],
       );
     case 5:
@@ -167,16 +173,19 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Switch(
-            value: controller.dataModel.value.isAuto,
+            value: controller.dataModel.value.isAuto.value,
             onChanged: (value) {
-              controller.isAuto.value = value;
+              controller.dataModel.value.isAuto.value = value;
               controller.publishMessage(
-                  payload:
-                      controller.dataModel.value.isAuto ? "AUTOON" : "AUTOOFF");
+                payload: controller.dataModel.value.isAuto.value
+                    ? "AUTOON"
+                    : "AUTOOFF",
+              );
+              controller.update();
             },
           ),
           UtilWidget.buildText(
-              "Chế độ tự động: ${getStatusSensor(controller.dataModel.value.isAuto)}"),
+              "Chế độ tự động: ${getStatusSensor(controller.dataModel.value.isAuto.value)}"),
         ],
       );
     default:
