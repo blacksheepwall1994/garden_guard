@@ -16,6 +16,8 @@ class BoxStorage {
 
   static String get boxTopic => box.read(BoxValue.boxTopic) ?? '';
 
+  static String get boxVideoUrl => box.read(BoxValue.boxVideoUrl) ?? '';
+
   static final BoxStorage _singleton = BoxStorage._internal();
 
   factory BoxStorage() {
@@ -52,11 +54,7 @@ class BoxStorage {
     box.erase();
   }
 
-  static void getAllData() {
-    print(BoxStorage.boxUrl);
-    print(BoxStorage.boxPort);
-    print(BoxStorage.boxUsername);
-    print(BoxStorage.boxPassword);
-    print(BoxStorage.boxTopic);
+  static void setVideoUrl(String value) {
+    box.write(BoxValue.boxVideoUrl, value);
   }
 }

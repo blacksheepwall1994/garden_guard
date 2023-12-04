@@ -193,47 +193,6 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
   }
 }
 
-Widget _buildBodyLandscape(HomeCtrl controller) {
-  return Scaffold(
-    body: Obx(
-      () => Row(
-        children: [
-          _buildVideoCapture(controller),
-        ],
-      ),
-    ),
-  );
-}
-
-Widget _buildVideoCapture(HomeCtrl controller) {
-  return Stack(
-    children: [
-      VlcPlayer(
-        controller: controller.vlcViewController,
-        aspectRatio: 16 / 9,
-        placeholder: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-      Align(
-        alignment: Alignment.bottomRight,
-        child: IconButton(
-          onPressed: () => SystemChrome.setPreferredOrientations(
-            [
-              DeviceOrientation.landscapeLeft,
-              DeviceOrientation.landscapeRight,
-            ],
-          ),
-          icon: const Icon(
-            Icons.fullscreen_rounded,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
 Widget _buildBodyPortrait(HomeCtrl controller) {
   return Scaffold(
     appBar: AppBar(
@@ -247,38 +206,53 @@ Widget _buildBodyPortrait(HomeCtrl controller) {
         ),
       ],
     ),
-    body: Obx(
-      () => Stack(
-        children: [
-          SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                VlcPlayer(
-                  controller: controller.vlcViewController,
-                  aspectRatio: 16 / 9,
-                  placeholder: const Center(
-                    child: CircularProgressIndicator(),
+    body: SafeArea(
+      bottom: false,
+      child: Obx(
+        () => RefreshIndicator(
+          onRefresh: () async {
+            await controller.videoController.player
+                .open(Media(BoxStorage.boxVideoUrl));
+          },
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: controller.isConnected.value
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: Video(
+                                controller: controller.videoController,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ).paddingAll(10)
+                        : const SizedBox.shrink(),
                   ),
-                ),
-                Expanded(
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    itemCount: GardenComponent.iconData.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
+                  Expanded(
+                    flex: 2,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      itemCount: GardenComponent.iconData.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                      ),
+                      itemBuilder: (context, index) {
+                        return _buildItem(index, controller);
+                      },
                     ),
-                    itemBuilder: (context, index) {
-                      return _buildItem(index, controller);
-                    },
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+              if (controller.isLoading.value == true) ..._buildLoadingForm(),
+            ],
           ),
-          if (controller.isLoading.value == true) ..._buildLoadingForm(),
-        ],
+        ),
       ),
     ),
   );
