@@ -12,7 +12,7 @@ class DataModel {
     this.soilMoisture1 = 0,
     this.soilMoisture2 = 0,
     this.waterLevel = false,
-    this.lux = 0,
+    this.lux = false,
     // this.isAuto = false,
   });
 
@@ -25,7 +25,7 @@ class DataModel {
   int soilMoisture1;
   int soilMoisture2;
   bool waterLevel;
-  int lux;
+  bool lux;
   RxBool isAuto = false.obs;
 
   factory DataModel.fromJson(Map<String, dynamic> json) {
@@ -39,13 +39,13 @@ class DataModel {
       soilMoisture1: json["soilMoisture1"] ?? SoilStatus.normal,
       soilMoisture2: json["soilMoisture2"] ?? SoilStatus.normal,
       waterLevel: json["waterLevel"] ?? false,
-      lux: json["lux"] ?? 0,
+      lux: json["lux"] ?? false,
       // isAuto: json["isAuto"] ?? false,
     )
-      ..motor1.value = json["motor1"] ?? false.obs
-      ..motor2.value = json["motor2"] ?? false.obs
-      ..fan.value = json["fan"] ?? false.obs
-      ..isAuto.value = json["isAuto"] ?? false.obs;
+      ..motor1.value = json["motor1"] ?? false
+      ..motor2.value = json["motor2"] ?? false
+      ..fan.value = json["fan"] ?? false
+      ..isAuto.value = json["isAuto"] ?? false;
   }
 
   Map<String, dynamic> toJson() => {
