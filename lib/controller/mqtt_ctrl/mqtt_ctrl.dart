@@ -6,8 +6,7 @@ import 'package:get/get.dart';
 class MqttCtrl extends GetxController {
   final formKey = GlobalKey<FormState>();
 
-  final TextEditingController mqttUrl = TextEditingController()
-    ..text = 'test.mosquitto.org';
+  final TextEditingController mqttUrl = TextEditingController()..text = 'broker.mqtt.cool';
 
   final TextEditingController mqttPort = TextEditingController()..text = '1883';
 
@@ -15,11 +14,10 @@ class MqttCtrl extends GetxController {
 
   final TextEditingController mqttPassword = TextEditingController();
 
-  final TextEditingController videoUrl = TextEditingController()
-    ..text = 'http://sheepu.local:8081/live.flv';
+  final TextEditingController videoUrl = TextEditingController()..text = 'http://10.3.2.8:8080/video_feed';
 
-  final TextEditingController mqttTopic = TextEditingController()
-    ..text = 'garden_guard_quac';
+  final TextEditingController mqttTopic = TextEditingController()..text = '2024/datn/esp/app';
+  final TextEditingController mqttTopicSend = TextEditingController()..text = '2024/datn/app/esp';
 
   void saveMqtt() {
     if (!formKey.currentState!.validate()) {
@@ -34,6 +32,8 @@ class MqttCtrl extends GetxController {
     BoxStorage.setBoxPassword(mqttPassword.text.trim());
 
     BoxStorage.setBoxTopic(mqttTopic.text.trim());
+
+    BoxStorage.setBoxTopicSend(mqttTopicSend.text.trim());
 
     BoxStorage.setVideoUrl(videoUrl.text.trim());
 

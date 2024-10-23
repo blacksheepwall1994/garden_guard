@@ -12,17 +12,9 @@ List<Widget> _buildLoadingForm() {
   ];
 }
 
-Widget _buildDHTSensor(Dht? dht) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      UtilWidget.buildText(
-        "Nhiệt độ: ${dht?.temperature.toString() ?? '0'}",
-      ),
-      UtilWidget.buildText(
-        "Độ ẩm: ${dht?.humidity.toString() ?? '0'}",
-      ),
-    ],
+Widget _buildDHTSensor(double temperature) {
+  return UtilWidget.buildText(
+    "Nhiệt độ: ${temperature.toString()}",
   );
 }
 
@@ -41,9 +33,9 @@ Widget _buildItem(int index, HomeCtrl controller) {
         children: [
           Center(
             child: Icon(
-              GardenComponent.iconData[index]!.icon,
+              GardenComponent.iconData[index]?.icon,
               color: Colors.blue.withOpacity(0.4),
-              size: 100,
+              size: 80,
             ),
           ),
           _buildDataSensor(index, controller),
@@ -55,9 +47,9 @@ Widget _buildItem(int index, HomeCtrl controller) {
 
 String getStatusSensor(bool value) {
   if (value == true) {
-    return "Đang bật";
+    return "Đang mở";
   } else {
-    return "Đang tắt";
+    return "Đang đóng";
   }
 }
 
@@ -90,47 +82,30 @@ String getWaterLevel(int value) {
 Widget _buildDataSensor(int index, HomeCtrl controller) {
   switch (index) {
     case 0:
-      return _buildDHTSensor(controller.dataModel.value.dht1);
+      return _buildDHTSensor(controller.dataModel.value.temperature);
     case 1:
-      return _buildDHTSensor(controller.dataModel.value.dht2);
+      return UtilWidget.buildText('Gas: ${controller.dataModel.value.gas}');
     case 2:
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Switch(
-            value: controller.dataModel.value.motor1.value,
-            onChanged: (value) {
-              controller.dataModel.value.motor1.value = value;
-              controller.publishMessage(
-                payload: controller.dataModel.value.motor1.value
-                    ? "RELAY1ON"
-                    : "RELAY1OFF",
-              );
-              controller.update();
-            },
-          ),
-          UtilWidget.buildText(
-              "Máy bơm 1: ${getStatusSensor(controller.dataModel.value.motor1.value)}"),
-        ],
+      return UtilWidget.buildText(
+        controller.dataModel.value.motion == 0 ? "Không có chuyển động" : "Có chuyển động",
       );
     case 3:
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Switch(
-            value: controller.dataModel.value.motor2.value,
+            value: controller.dataModel.value.door.value,
             onChanged: (value) {
-              controller.dataModel.value.motor2.value = value;
+              controller.dataModel.value.door.value = value;
               controller.publishMessage(
-                payload: controller.dataModel.value.motor2.value
-                    ? "RELAY2ON"
-                    : "RELAY2OFF",
+                payload: jsonEncode(
+                  controller.dataModel.value.toJsonSend(),
+                ),
               );
               controller.update();
             },
           ),
-          UtilWidget.buildText(
-              "Máy bơm 2: ${getStatusSensor(controller.dataModel.value.motor2.value)}"),
+          UtilWidget.buildText("Cửa : ${getStatusSensor(controller.dataModel.value.door.value)}"),
         ],
       );
     case 4:
@@ -142,50 +117,14 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
             onChanged: (value) {
               controller.dataModel.value.fan.value = value;
               controller.publishMessage(
-                payload: controller.dataModel.value.fan.value
-                    ? "RELAY3ON"
-                    : "RELAY3OFF",
+                payload: jsonEncode(
+                  controller.dataModel.value.toJsonSend(),
+                ),
               );
               controller.update();
             },
           ),
-          UtilWidget.buildText(
-              "Quạt: ${getStatusSensor(controller.dataModel.value.fan.value)}"),
-        ],
-      );
-    case 5:
-      return UtilWidget.buildText(
-          "Cảm biến mưa: \n${controller.dataModel.value.rainSensor ? 'Đang mưa' : 'Không mưa'}");
-    case 6:
-      return UtilWidget.buildText(
-          getSoilData(controller.dataModel.value.soilMoisture1));
-    case 7:
-      return UtilWidget.buildText(
-          getSoilData(controller.dataModel.value.soilMoisture2));
-    case 8:
-      return UtilWidget.buildText(
-          'Lượng nước: ${!controller.dataModel.value.waterLevel ? "Không đủ nước" : "Đủ nước"}');
-    case 9:
-      return UtilWidget.buildText(
-          'Nắng: ${controller.dataModel.value.lux == 0 ? "Gắt" : "Bình thường"}');
-    case 10:
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Switch(
-            value: controller.dataModel.value.isAuto.value,
-            onChanged: (value) {
-              controller.dataModel.value.isAuto.value = value;
-              controller.publishMessage(
-                payload: controller.dataModel.value.isAuto.value
-                    ? "AUTOON"
-                    : "AUTOOFF",
-              );
-              controller.update();
-            },
-          ),
-          UtilWidget.buildText(
-              "Chế độ tự động: ${getStatusSensor(controller.dataModel.value.isAuto.value)}"),
+          UtilWidget.buildText("Quạt: ${getStatusSensor(controller.dataModel.value.fan.value)}"),
         ],
       );
     default:
@@ -211,8 +150,9 @@ Widget _buildBodyPortrait(HomeCtrl controller) {
       child: Obx(
         () => RefreshIndicator(
           onRefresh: () async {
-            await controller.videoController.player
-                .open(Media(BoxStorage.boxVideoUrl));
+            await controller.vlcViewController.stop();
+            await controller.vlcViewController.play();
+            // await controller.videoController.player.open(Media(BoxStorage.boxVideoUrl));
           },
           child: Stack(
             children: [
@@ -223,12 +163,10 @@ Widget _buildBodyPortrait(HomeCtrl controller) {
                     child: controller.isConnected.value
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(15),
-                            child: AspectRatio(
+                            child: VlcPlayer(
+                              controller: controller.vlcViewController,
+                              // fit: BoxFit.cover,
                               aspectRatio: 16 / 9,
-                              child: Video(
-                                controller: controller.videoController,
-                                fit: BoxFit.cover,
-                              ),
                             ),
                           ).paddingAll(10)
                         : const SizedBox.shrink(),
@@ -238,8 +176,7 @@ Widget _buildBodyPortrait(HomeCtrl controller) {
                     child: GridView.builder(
                       shrinkWrap: true,
                       itemCount: GardenComponent.iconData.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                       ),
                       itemBuilder: (context, index) {

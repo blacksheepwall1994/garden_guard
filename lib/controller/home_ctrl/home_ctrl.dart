@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:garden_guard/components/garden_components.dart';
@@ -14,7 +15,7 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomeCtrl extends GetxController {
-  final client = MqttServerClient(BoxStorage.boxUrl, '');
+  final client = MqttServerClient(BoxStorage.boxUrl, DateTime.now().millisecondsSinceEpoch.toString());
 
   WebSocketChannel? channel;
 
@@ -30,20 +31,21 @@ class HomeCtrl extends GetxController {
   late final player = Player();
   // Create a [VideoController] to handle video output from [Player].
   late final videoController = VideoController(player);
-  VlcPlayerController vlcViewController = VlcPlayerController.network(
-    "http://sheepu.local:8081/live.flv",
-    autoPlay: true,
-    hwAcc: HwAcc.auto,
-    options: VlcPlayerOptions(
-      rtp: VlcRtpOptions([
-        VlcRtpOptions.rtpOverRtsp(true),
-      ]),
-    ),
-  );
+  late VlcPlayerController vlcViewController;
 
   @override
   void onInit() async {
     super.onInit();
+    vlcViewController = VlcPlayerController.network(
+      BoxStorage.boxVideoUrl,
+      autoPlay: true,
+      hwAcc: HwAcc.auto,
+      options: VlcPlayerOptions(
+        rtp: VlcRtpOptions([
+          VlcRtpOptions.rtpOverRtsp(true),
+        ]),
+      ),
+    );
     await connect();
     await connectWebSocket();
   }
@@ -76,18 +78,22 @@ class HomeCtrl extends GetxController {
   Future<void> connect() async {
     client.port = int.parse(BoxStorage.boxPort);
     client.logging(on: true);
-    client.secure = false;
+    // client.secure = true;
     client.keepAlivePeriod = 20;
     client.connectTimeoutPeriod = 2000;
     client.onDisconnected = onDisconnected;
     client.onConnected = onConnected;
     final connMess = MqttConnectMessage()
-        .withClientIdentifier(DateTime.now().millisecondsSinceEpoch.toString())
-        .withWillQos(MqttQos.atLeastOnce);
+        .withClientIdentifier(
+          DateTime.now().millisecondsSinceEpoch.toString(),
+        )
+        .withWillQos(
+          MqttQos.atLeastOnce,
+        );
     client.connectionMessage = connMess;
     isLoading.value = true;
     try {
-      await client.connect(BoxStorage.boxUsername, BoxStorage.boxPassword);
+      await client.connect();
     } on NoConnectionException catch (e) {
       logger.i('client exception - $e');
       client.disconnect();
@@ -110,8 +116,7 @@ class HomeCtrl extends GetxController {
     client.updates?.listen(
       (List<MqttReceivedMessage<MqttMessage>> c) {
         final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
-        final String payload =
-            MqttPublishPayload.bytesToStringAsString(message.payload.message);
+        final String payload = MqttPublishPayload.bytesToStringAsString(message.payload.message);
         dataModel.value = DataModel.fromJson(jsonDecode(payload));
         // logger.i('Received message:$payload from topic: ${c[0].topic}>');
       },
@@ -130,11 +135,12 @@ class HomeCtrl extends GetxController {
     );
   }
 
-  Future<void> publishMessage({required String payload}) async {
+  Future<void> publishMessage({
+    required String payload,
+  }) async {
     final builder = MqttClientPayloadBuilder();
     builder.addString(payload);
-    client.publishMessage(
-        "${BoxStorage.boxTopic}_send", MqttQos.atLeastOnce, builder.payload!);
+    client.publishMessage(BoxStorage.boxTopicSend, MqttQos.atLeastOnce, builder.payload!);
   }
 
   Future<void> logOut() async {

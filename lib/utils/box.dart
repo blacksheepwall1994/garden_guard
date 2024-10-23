@@ -16,6 +16,8 @@ class BoxStorage {
 
   static String get boxTopic => box.read(BoxValue.boxTopic) ?? '';
 
+  static String get boxTopicSend => box.read(BoxValue.boxTopicSend) ?? '';
+
   static String get boxVideoUrl => box.read(BoxValue.boxVideoUrl) ?? '';
 
   static final BoxStorage _singleton = BoxStorage._internal();
@@ -48,6 +50,10 @@ class BoxStorage {
 
   static void setBoxTopic(String value) {
     box.write(BoxValue.boxTopic, value);
+  }
+
+  static void setBoxTopicSend(String value) {
+    box.write(BoxValue.boxTopicSend, value);
   }
 
   static void clear() {

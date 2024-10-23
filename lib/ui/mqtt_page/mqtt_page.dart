@@ -45,6 +45,11 @@ class MqttPage extends GetView<MqttCtrl> {
                   controller: controller.mqttTopic,
                 ),
                 _buildTextFields(
+                  title: "Topic Send",
+                  isValidate: true,
+                  controller: controller.mqttTopicSend,
+                ),
+                _buildTextFields(
                   title: "Video Url",
                   isValidate: true,
                   controller: controller.videoUrl,

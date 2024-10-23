@@ -5,16 +5,10 @@ import 'package:get/get.dart';
 class GardenComponent {
   static const Map<int, Icon> iconData = {
     0: Icon(Icons.thermostat),
-    1: Icon(Icons.thermostat),
-    2: Icon(Icons.shower),
-    3: Icon(Icons.shower),
-    4: Icon(Icons.lightbulb),
-    5: Icon(Icons.thunderstorm),
-    6: Icon(Icons.grass),
-    7: Icon(Icons.grass),
-    8: Icon(Icons.water),
-    9: Icon(Icons.lightbulb_circle),
-    10: Icon(Icons.auto_awesome),
+    1: Icon(Icons.gas_meter_outlined),
+    2: Icon(Icons.slow_motion_video_outlined),
+    3: Icon(Icons.door_front_door),
+    4: Icon(Icons.wind_power),
   };
   static Widget showDialog(HomeCtrl controller) {
     return AlertDialog(
