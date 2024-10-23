@@ -82,7 +82,7 @@ String getWaterLevel(int value) {
 Widget _buildDataSensor(int index, HomeCtrl controller) {
   switch (index) {
     case 0:
-      return _buildDHTSensor(controller.dataModel.value.temperature);
+      return UtilWidget.buildText("Nhiệt độ: ${controller.dataModel.value.temperature}");
     case 1:
       return UtilWidget.buildText('Gas: ${controller.dataModel.value.gas}');
     case 2:
