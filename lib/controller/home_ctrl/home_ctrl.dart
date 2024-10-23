@@ -8,8 +8,8 @@ import 'package:garden_guard/components/garden_components.dart';
 import 'package:garden_guard/garden_guard_src.dart';
 import 'package:garden_guard/routes/routes.dart';
 import 'package:get/get.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart';
+// import 'package:media_kit/media_kit.dart';
+// import 'package:media_kit_video/media_kit_video.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -28,9 +28,9 @@ class HomeCtrl extends GetxController {
   Rx<DataModel> dataModel = DataModel().obs;
 
   final image = Rx<Uint8List?>(null);
-  late final player = Player();
+  // late final player = Player();
   // Create a [VideoController] to handle video output from [Player].
-  late final videoController = VideoController(player);
+  // late final videoController = VideoController(player);
   late VlcPlayerController vlcViewController;
 
   @override
@@ -52,7 +52,8 @@ class HomeCtrl extends GetxController {
 
   @override
   void onClose() {
-    player.dispose();
+    // player.dispose();
+    vlcViewController.dispose();
     super.dispose();
   }
 
@@ -63,7 +64,7 @@ class HomeCtrl extends GetxController {
       // await videoPlayerController.initialize();
 
       // vlcViewController.play();
-      player.open(Media(BoxStorage.boxVideoUrl), play: true);
+      // player.open(Media(BoxStorage.boxVideoUrl), play: true);
       isConnected.value = true;
       SystemChrome.setPreferredOrientations(
         [
