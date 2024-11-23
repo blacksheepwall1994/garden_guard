@@ -23,7 +23,10 @@ class DataModel {
       motion: json["motion"] ?? 0,
       gas: json["gas"] ?? 0,
     )
-      ..fan.value = json["fan"] == 1 
+      ..fan.value = json["fan"] == 1
+      ..light1.value = json["light_1"] == 1
+      ..light2.value = json["light_2"] == 1
+      ..light3.value = json["light_3"] == 1
       ..door.value = json["door"] == 1;
   }
 

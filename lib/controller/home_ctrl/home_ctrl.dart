@@ -144,6 +144,9 @@ class HomeCtrl extends GetxController {
         final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
         final String payload = MqttPublishPayload.bytesToStringAsString(message.payload.message);
         dataModel.value = DataModel.fromJson(jsonDecode(payload));
+        // dataModel.value.light1.value = dataModel.value.light1.value;
+        // dataModel.value.light2.value = dataModel.value.light2.value;
+        // dataModel.value.light3.value = dataModel.value.light3.value;
         logger.d(jsonDecode(payload));
         // logger.i('Received message:$payload from topic: ${c[0].topic}>');
       },
