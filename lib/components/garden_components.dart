@@ -9,6 +9,9 @@ class GardenComponent {
     2: Icon(Icons.slow_motion_video_outlined),
     3: Icon(Icons.door_front_door),
     4: Icon(Icons.wind_power),
+    5: Icon(Icons.light_mode),
+    6: Icon(Icons.light_mode),
+    7: Icon(Icons.light_mode),
   };
   static Widget showDialog(HomeCtrl controller) {
     return AlertDialog(

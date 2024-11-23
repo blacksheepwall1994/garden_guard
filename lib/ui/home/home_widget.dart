@@ -53,6 +53,14 @@ String getStatusSensor(bool value) {
   }
 }
 
+String getStatusLightSensor(bool value) {
+  if (value == true) {
+    return "Đang bật";
+  } else {
+    return "Đang tắt";
+  }
+}
+
 String getSoilData(int value) {
   switch (SoilStatus.values[value]) {
     case SoilStatus.normal:
@@ -80,6 +88,7 @@ String getWaterLevel(int value) {
 }
 
 Widget _buildDataSensor(int index, HomeCtrl controller) {
+  final dataModel = controller.dataModel.value;
   switch (index) {
     case 0:
       return UtilWidget.buildText("Nhiệt độ: ${controller.dataModel.value.temperature}");
@@ -90,46 +99,67 @@ Widget _buildDataSensor(int index, HomeCtrl controller) {
         controller.dataModel.value.motion == 0 ? "Không có chuyển động" : "Có chuyển động",
       );
     case 3:
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Switch(
-            value: controller.dataModel.value.door.value,
-            onChanged: (value) {
-              controller.dataModel.value.door.value = value;
-              controller.publishMessage(
-                payload: jsonEncode(
-                  controller.dataModel.value.toJsonSend(),
-                ),
-              );
-              controller.update();
-            },
-          ),
-          UtilWidget.buildText("Cửa : ${getStatusSensor(controller.dataModel.value.door.value)}"),
-        ],
+      return buildSwitchControl(
+        label: "Cửa: ${getStatusSensor(dataModel.door.value)}",
+        value: dataModel.door.value,
+        onChanged: (value) {
+          dataModel.door.value = value;
+          controller.publishUpdate();
+        },
       );
     case 4:
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Switch(
-            value: controller.dataModel.value.fan.value,
-            onChanged: (value) {
-              controller.dataModel.value.fan.value = value;
-              controller.publishMessage(
-                payload: jsonEncode(
-                  controller.dataModel.value.toJsonSend(),
-                ),
-              );
-              controller.update();
-            },
-          ),
-          UtilWidget.buildText("Quạt: ${getStatusSensor(controller.dataModel.value.fan.value)}"),
-        ],
+      return buildSwitchControl(
+        label: "Quạt: ${getStatusSensor(dataModel.fan.value)}",
+        value: dataModel.fan.value,
+        onChanged: (value) {
+          dataModel.fan.value = value;
+          controller.publishUpdate();
+        },
+      );
+    case 5:
+      return buildSwitchControl(
+        label: "Đèn 1: ${getStatusLightSensor(dataModel.light1.value)}",
+        value: dataModel.light1.value,
+        onChanged: (value) {
+          dataModel.light1.value = value;
+          controller.publishUpdate();
+        },
+      );
+    case 6:
+      return buildSwitchControl(
+        label: "Đèn 2: ${getStatusLightSensor(dataModel.light2.value)}",
+        value: dataModel.light2.value,
+        onChanged: (value) {
+          dataModel.light2.value = value;
+          controller.publishUpdate();
+        },
+      );
+    case 7:
+      return buildSwitchControl(
+        label: "Đèn 3: ${getStatusLightSensor(dataModel.light3.value)}",
+        value: dataModel.light3.value,
+        onChanged: (value) {
+          dataModel.light3.value = value;
+          controller.publishUpdate();
+        },
       );
     default:
       return UtilWidget.buildText("Lỗi đọc dữ liệu");
   }
+}
+
+Widget buildSwitchControl({
+  required String label,
+  required bool value,
+  required Function(bool) onChanged,
+}) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      Switch(value: value, onChanged: onChanged),
+      UtilWidget.buildText(label),
+    ],
+  );
 }
 
 Widget _buildBodyPortrait(HomeCtrl controller) {

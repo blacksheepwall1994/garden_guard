@@ -15,7 +15,10 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class HomeCtrl extends GetxController {
-  final client = MqttServerClient(BoxStorage.boxUrl, DateTime.now().millisecondsSinceEpoch.toString());
+  final client = MqttServerClient(
+    BoxStorage.boxUrl,
+    "${DateTime.now().millisecondsSinceEpoch.toString()}abcxyz12345",
+  );
 
   WebSocketChannel? channel;
 
@@ -76,17 +79,39 @@ class HomeCtrl extends GetxController {
     }
   }
 
+  void publishUpdate() {
+    publishMessage(
+      payload: jsonEncode(
+        dataModel.value.toJsonSend(),
+      ),
+    );
+    update();
+  }
+
   Future<void> connect() async {
     client.port = int.parse(BoxStorage.boxPort);
-    client.logging(on: true);
+    client.logging(on: false);
     // client.secure = true;
+
+    // /// Set the correct MQTT protocol for mosquito
+    // client.setProtocolV311();
+    // ByteData data = await rootBundle.load('cert/sheepu.crt');
+    // SecurityContext context = SecurityContext.defaultContext;
+    // context.setTrustedCertificatesBytes(data.buffer.asUint8List());
+
+    // /// Set an on bad certificate callback, note that the parameter is needed.
+    // client.onBadCertificate = (Object a) {
+    //   logger.d(a);
+    //   return true;
+    // };
+
     client.keepAlivePeriod = 20;
     client.connectTimeoutPeriod = 2000;
     client.onDisconnected = onDisconnected;
     client.onConnected = onConnected;
     final connMess = MqttConnectMessage()
         .withClientIdentifier(
-          DateTime.now().millisecondsSinceEpoch.toString(),
+          "${DateTime.now().millisecondsSinceEpoch.toString()}abcxyz12345",
         )
         .withWillQos(
           MqttQos.atLeastOnce,
@@ -119,6 +144,7 @@ class HomeCtrl extends GetxController {
         final MqttPublishMessage message = c[0].payload as MqttPublishMessage;
         final String payload = MqttPublishPayload.bytesToStringAsString(message.payload.message);
         dataModel.value = DataModel.fromJson(jsonDecode(payload));
+        logger.d(jsonDecode(payload));
         // logger.i('Received message:$payload from topic: ${c[0].topic}>');
       },
     );
@@ -154,3 +180,14 @@ class HomeCtrl extends GetxController {
     Get.dialog(GardenComponent.showDialog(this));
   }
 }
+// Bản tin như thế này ạ
+// 2. App ----> Esp32
+// topic: "2024/datn/app/esp"
+// mở cửa là 1, đóng cửa là 0
+// {
+//     "door": 1,
+//     "fan":0,
+//     "light_1":0,
+//     "light_2":0,
+//     "light_3":0
+// }
