@@ -14,7 +14,7 @@ class MqttCtrl extends GetxController {
 
   final TextEditingController mqttPassword = TextEditingController();
 
-  final TextEditingController videoUrl = TextEditingController()..text = 'http://192.168.0.102:8080/video_feed';
+  final TextEditingController videoUrl = TextEditingController()..text = 'http://192.168.1.26:8080/video_feed';
 
   final TextEditingController mqttTopic = TextEditingController()..text = '2024/datn/esp/app';
   final TextEditingController mqttTopicSend = TextEditingController()..text = '2024/datn/app/esp';

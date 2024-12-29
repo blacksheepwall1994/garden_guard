@@ -29,7 +29,7 @@ Widget _buildItem(int index, HomeCtrl controller) {
     ),
     child: Obx(
       () => Stack(
-        alignment: Alignment.center,
+        alignment: Alignment.topCenter,
         children: [
           Center(
             child: Icon(
@@ -38,7 +38,7 @@ Widget _buildItem(int index, HomeCtrl controller) {
               size: 80,
             ),
           ),
-          _buildDataSensor(index, controller),
+          _buildDataSensor(index, controller).paddingAll(12),
         ],
       ),
     ),
@@ -154,7 +154,7 @@ Widget buildSwitchControl({
   required Function(bool) onChanged,
 }) {
   return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
+    mainAxisAlignment: MainAxisAlignment.start,
     children: [
       Switch(value: value, onChanged: onChanged),
       UtilWidget.buildText(label),
