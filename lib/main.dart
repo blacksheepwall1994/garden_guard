@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       getPages: AppPages.routes,
       initialRoute: AppPages.initial,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
         textTheme: GoogleFonts.latoTextTheme(
           const TextTheme(
             bodyMedium: TextStyle(
